@@ -36,3 +36,5 @@ resources:
     ephemeralStorage: 2Gi
 initContainers:
 sidecars:
+metrics:
+  enabled: true

@@ -102,6 +102,9 @@ spec:
         - "--import-realm"
         - --spi-authenticator-allow-ban-check-authenticator-dbpath=/opt/keycloak/allowbans
         - --spi-theme-welcome-theme=keycloak-welcome-theme
+        {{- if .Values.metrics.enabled }}
+        - --metrics-enabled=true
+        {{- end }}
         envFrom:
         - configMapRef:
             name: keycloak-env-vars
