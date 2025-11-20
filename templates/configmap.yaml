@@ -21,6 +21,7 @@ data:
   KC_DB_USERNAME: {{ .Values.db.user | quote }}
   KEYCLOAK_ENABLE_HTTPS: {{ .Values.ingress.tls | quote }}
   KEYCLOAK_ENABLE_STATISTICS: 'true'
+  KEYCLOAK_HOSTNAME_ADMIN: {{ .Values.adminIngress.domain | quote }}
   KEYCLOAK_HOSTNAME: {{ .Values.ingress.domain | quote }}
   KEYCLOAK_HOSTNAME_STRICT: 'false'
   KEYCLOAK_HTTP_PORT: '8080'
