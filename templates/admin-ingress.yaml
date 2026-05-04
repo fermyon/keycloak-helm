@@ -4,6 +4,9 @@ kind: Ingress
 metadata:
   annotations:
     cert-manager.io/cluster-issuer: {{ .Values.adminIngress.clusterIssuer }}
+    {{- with .Values.adminIngress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   labels:
     app.kubernetes.io/component: keycloak
     app.kubernetes.io/instance: keycloak
