@@ -12,12 +12,14 @@ ingress:
   ingressClassName: "nginx"
   tls: true
   clusterIssuer: "letsencrypt-staging"
+  annotations: {}
 adminIngress:
   enabled: false
   domain: admin.keycloak.example.com
   ingressClassName: "nginx"
   tls: true
   clusterIssuer: "letsencrypt-staging"
+  annotations: {}
 extraEnvVars:
 extraVolumeMounts:
 extraVolumes:
