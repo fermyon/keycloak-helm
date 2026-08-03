@@ -10,9 +10,7 @@ metadata:
   name: keycloak-env-vars
   namespace: {{ .Release.Namespace }}
 data:
-  JAVA_OPTS_APPEND: '-Djgroups.dns.query=keycloak-headless.keycloak.svc.cluster.local'
   KC_BOOTSTRAP_ADMIN_USERNAME: admin
-  KC_CACHE_CONFIG_FILE: cache-ispn.xml
   KC_CACHE_TYPE: ispn
   KC_DB: "postgres"
   KC_DB_DATABASE: {{ .Values.db.name | quote }}

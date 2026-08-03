@@ -44,3 +44,8 @@ initContainers:
 sidecars:
 metrics:
   enabled: true
+replicaCount: 1
+pdb:
+  create: true
+  minAvailable: 1
+  maxUnavailable:
