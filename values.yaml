@@ -6,6 +6,7 @@ image:
   repository:
   tag:
 isProduction: true
+podManagementPolicy: "Parallel"
 ingress:
   enabled: true
   domain: keycloak.example.com
