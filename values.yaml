@@ -2,8 +2,11 @@
 global:
   imagePullSecrets:
     - name: regcred-keycloak
+## The chart starts keycloak with --optimized, so this must point at an image
+## that already ran `kc.sh build` with the allow/ban plugin and the neutrino
+## themes baked in -- built from Dockerfile.keycloak in fermyon/kc-allowban-plugin.
 image:
-  repository:
+  repository: keycloak/keycloak
   tag:
 isProduction: true
 podManagementPolicy: "Parallel"

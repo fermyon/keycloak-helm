@@ -50,51 +50,8 @@ spec:
               topologyKey: kubernetes.io/hostname
             weight: 1
       automountServiceAccountToken: true
-      initContainers:
-      - command:
-        - /bin/bash
-        image: keycloak/keycloak:{{ default "latest" .Values.image.tag }}
-        imagePullPolicy: IfNotPresent
-        name: prepare-write-dirs
-        args:
-        - '-ec'
-        - |
-          echo "starting the Copy operation"
-          # In order to not break the application functionality we need to make some
-          # directories writable, so we need to copy it to an empty dir volume
-          cp -r --preserve=mode,timestamps /opt/keycloak/lib/quarkus /emptydir/app-quarkus-dir
-          cp -r --preserve=mode,timestamps /opt/keycloak/conf /emptydir/app-conf-dir
-          cp -r --preserve=mode,timestamps /opt/keycloak/data /emptydir/app-data-dir
-          cp -r --preserve=mode,timestamps /opt/keycloak/providers /emptydir/app-providers-dir
-          cp -r --preserve=mode,timestamps /opt/keycloak/themes /emptydir/app-themes-dir
-
-          echo "Copy operation completed"
-        resources:
-          limits:
-            cpu: 750m
-            ephemeral-storage: 2Gi
-            memory: 768Mi
-          requests:
-            cpu: 500m
-            ephemeral-storage: 50Mi
-            memory: 512Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-              - ALL
-          privileged: false
-          readOnlyRootFilesystem: true
-          runAsGroup: 1001
-          runAsNonRoot: true
-          runAsUser: 1001
-          seLinuxOptions: {}
-          seccompProfile:
-            type: RuntimeDefault
-        volumeMounts:
-          - mountPath: /emptydir
-            name: empty-dir
       {{- if .Values.initContainers }}
+      initContainers:
       {{- toYaml .Values.initContainers | nindent 6 -}}
       {{- end }}
       containers:
@@ -102,10 +59,14 @@ spec:
       {{ toYaml .Values.sidecars | nindent 6 -}}
       {{- end }}
       - name: keycloak
-        image: keycloak/keycloak:{{ default "latest" .Values.image.tag }}
+        image: {{ default "keycloak/keycloak" .Values.image.repository }}:{{ default "latest" .Values.image.tag }}
         imagePullPolicy: IfNotPresent
-        args: 
+        ## --optimized skips the Quarkus re-augmentation on boot. It requires an
+        ## image that already ran `kc.sh build` with the providers/themes baked
+        ## in -- see Dockerfile.keycloak in fermyon/kc-allowban-plugin.
+        args:
         - "start"
+        - "--optimized"
         - "--import-realm"
         - --spi-authenticator-allow-ban-check-authenticator-dbpath=/opt/keycloak/allowbans
         - --spi-theme-welcome-theme=keycloak-welcome-theme
@@ -198,28 +159,16 @@ spec:
           seLinuxOptions: {}
           seccompProfile:
             type: RuntimeDefault
+        ## conf/, lib/quarkus/, providers/ and themes/ are only read at runtime
+        ## and now ship complete in the image, so they stay on the read-only
+        ## rootfs. Only /tmp and data/ are ever written to.
         volumeMounts:
         - mountPath: /tmp
           name: empty-dir
           subPath: tmp-dir
-        - mountPath: /keycloak
-          name: empty-dir
-          subPath: app-volume-dir
-        - mountPath: /opt/keycloak/conf
-          name: empty-dir
-          subPath: app-conf-dir
-        - mountPath: /opt/keycloak/lib/quarkus
-          name: empty-dir
-          subPath: app-quarkus-dir
         - mountPath: /opt/keycloak/data
           name: empty-dir
           subPath: app-data-dir
-        - mountPath: /opt/keycloak/providers
-          name: empty-dir
-          subPath: app-providers-dir
-        - mountPath: /opt/keycloak/themes
-          name: empty-dir
-          subPath: app-themes-dir
         {{- if .Values.extraVolumeMounts -}}
         {{ toYaml .Values.extraVolumeMounts | nindent 8 -}}
         {{- end }}
