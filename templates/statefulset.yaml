@@ -129,7 +129,7 @@ spec:
         - name: KC_HEALTH_ENABLED
           value: 'true'
         - name: JAVA_OPTS_APPEND
-          value: '-Djgroups.bind.address=$(POD_IP)'
+          value: '-Djgroups.bind.address=$(POD_IP) -XX:-UseBASE64Intrinsics'
         - name: KC_BOOTSTRAP_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
