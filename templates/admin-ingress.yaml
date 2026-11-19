@@ -3,7 +3,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    cert-manager.io/cluster-issuer: {{ .Values.adminIngress.clusterIssuer }}
+  {{- with .Values.adminIngress.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ . }}
+  {{- end }}
   labels:
     app.kubernetes.io/component: keycloak
     app.kubernetes.io/instance: keycloak
